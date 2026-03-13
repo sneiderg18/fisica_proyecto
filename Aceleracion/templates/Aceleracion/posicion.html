@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Posición con velocidad constante</h1>
+    <p><strong>Fórmula:</strong> x = x₀ + v·t</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label>Posición inicial (x₀) m:</label>
+        <input type="number" name="x0" step="any"><br><br>
+
+        <label>Velocidad (v) m/s:</label>
+        <input type="number" name="v" step="any"><br><br>
+
+        <label>Tiempo (t) s:</label>
+        <input type="number" name="t" step="any"><br><br>
+
+        <button type="submit">Calcular</button>
+    </form>
+
+    {% if resultado is not None %}
+        <h2>Resultado: {{ resultado }} m</h2>
+    {% endif %}
+
+    <br><a href="/">← Volver</a>
+</body>
+</html>
