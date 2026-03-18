@@ -13,24 +13,24 @@
         {% csrf_token %}
 
         <label>¿Qué deseas calcular?</label><br>
-        <select name="buscar">
-            <option value="x">Posición final (x)</option>
-            <option value="x0">Posición inicial (x0)</option>
-            <option value="v">Velocidad (v)</option>
-            <option value="t">Tiempo (t)</option>
+        <select name="buscar" id="buscar" onchange="actualizarCampos()">
+            <option value="x"  {% if post.buscar == 'x'  %}selected{% endif %}>Posición final (x)</option>
+            <option value="x0" {% if post.buscar == 'x0' %}selected{% endif %}>Posición inicial (x0)</option>
+            <option value="v"  {% if post.buscar == 'v'  %}selected{% endif %}>Velocidad (v)</option>
+            <option value="t"  {% if post.buscar == 't'  %}selected{% endif %}>Tiempo (t)</option>
         </select><br><br>
 
         <label>Posición final (x) m:</label>
-        <input type="number" name="x" step="any"><br><br>
+        <input type="number" name="x" id="x" step="any" value="{{ post.x }}"><br><br>
 
         <label>Posición inicial (x₀) m:</label>
-        <input type="number" name="x0" step="any"><br><br>
+        <input type="number" name="x0" id="x0" step="any" value="{{ post.x0 }}"><br><br>
 
         <label>Velocidad (v) m/s:</label>
-        <input type="number" name="v" step="any"><br><br>
+        <input type="number" name="v" id="v" step="any" value="{{ post.v }}"><br><br>
 
         <label>Tiempo (t) s:</label>
-        <input type="number" name="t" step="any"><br><br>
+        <input type="number" name="t" id="t" step="any" value="{{ post.t }}"><br><br>
 
         <button type="submit">Calcular</button>
     </form>
@@ -44,5 +44,35 @@
     {% endif %}
 
     <br><a href="/">← Volver</a>
+
+    <script>
+        const camposBloqueados = {
+            'x':  ['x'],
+            'x0': ['x0'],
+            'v':  ['v'],
+            't':  ['t'],
+        };
+
+        function actualizarCampos() {
+            const buscar = document.getElementById('buscar').value;
+            const todosLosCampos = ['x', 'x0', 'v', 't'];
+
+            todosLosCampos.forEach(campo => {
+                const input = document.getElementById(campo);
+                input.disabled = false;
+                input.value = '';
+                input.style.backgroundColor = '';
+            });
+
+            camposBloqueados[buscar].forEach(campo => {
+                const input = document.getElementById(campo);
+                input.disabled = true;
+                input.value = '';
+                input.style.backgroundColor = '#e0e0e0';
+            });
+        }
+
+        actualizarCampos();
+    </script>
 </body>
 </html>

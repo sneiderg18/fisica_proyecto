@@ -13,24 +13,24 @@
         {% csrf_token %}
 
         <label>¿Qué deseas calcular?</label><br>
-        <select name="buscar">
-            <option value="a">Aceleración (a)</option>
-            <option value="vf">Velocidad final (vf)</option>
-            <option value="vi">Velocidad inicial (vi)</option>
-            <option value="t">Tiempo (t)</option>
+        <select name="buscar" id="buscar" onchange="actualizarCampos()">
+            <option value="a"  {% if post.buscar == 'a'  %}selected{% endif %}>Aceleración (a)</option>
+            <option value="vf" {% if post.buscar == 'vf' %}selected{% endif %}>Velocidad final (vf)</option>
+            <option value="vi" {% if post.buscar == 'vi' %}selected{% endif %}>Velocidad inicial (vi)</option>
+            <option value="t"  {% if post.buscar == 't'  %}selected{% endif %}>Tiempo (t)</option>
         </select><br><br>
 
         <label>Velocidad inicial (vi) m/s:</label>
-        <input type="number" name="vi" step="any"><br><br>
+        <input type="number" name="vi" id="vi" step="any" value="{{ post.vi }}"><br><br>
 
         <label>Velocidad final (vf) m/s:</label>
-        <input type="number" name="vf" step="any"><br><br>
+        <input type="number" name="vf" id="vf" step="any" value="{{ post.vf }}"><br><br>
 
         <label>Aceleración (a) m/s²:</label>
-        <input type="number" name="a" step="any"><br><br>
+        <input type="number" name="a" id="a" step="any" value="{{ post.a }}"><br><br>
 
         <label>Tiempo (t) s:</label>
-        <input type="number" name="t" step="any"><br><br>
+        <input type="number" name="t" id="t" step="any" value="{{ post.t }}"><br><br>
 
         <button type="submit">Calcular</button>
     </form>
@@ -44,5 +44,39 @@
     {% endif %}
 
     <br><a href="/">← Volver</a>
+
+    <script>
+        // Define qué campos se deshabilitan según lo que se quiere calcular
+        const camposBloqueados = {
+            'a':  ['a'],
+            'vf': ['vf'],
+            'vi': ['vi'],
+            't':  ['t'],
+        };
+
+        function actualizarCampos() {
+            const buscar = document.getElementById('buscar').value;
+            const todosLosCampos = ['vi', 'vf', 'a', 't'];
+
+            // Primero habilita todos
+            todosLosCampos.forEach(campo => {
+                const input = document.getElementById(campo);
+                input.disabled = false;
+                input.value = '';
+                input.style.backgroundColor = '';
+            });
+
+            // Luego deshabilita el que se va a calcular
+            camposBloqueados[buscar].forEach(campo => {
+                const input = document.getElementById(campo);
+                input.disabled = true;
+                input.value = '';
+                input.style.backgroundColor = '#e0e0e0';
+            });
+        }
+
+        // Ejecuta al cargar la página para que aplique desde el inicio
+        actualizarCampos();
+    </script>
 </body>
 </html>
