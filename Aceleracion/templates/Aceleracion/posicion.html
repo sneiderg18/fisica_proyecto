@@ -46,33 +46,32 @@
     <br><a href="/">← Volver</a>
 
     <script>
-        const camposBloqueados = {
-            'x':  ['x'],
-            'x0': ['x0'],
-            'v':  ['v'],
-            't':  ['t'],
-        };
+    const camposBloqueados = {
+        'x':  ['x'],
+        'x0': ['x0'],
+        'v':  ['v'],
+        't':  ['t'],
+    };
 
-        function actualizarCampos() {
-            const buscar = document.getElementById('buscar').value;
-            const todosLosCampos = ['x', 'x0', 'v', 't'];
+    function actualizarCampos(limpiar = true) {
+        const buscar = document.getElementById('buscar').value;
+        const todosLosCampos = ['x', 'x0', 'v', 't'];
 
-            todosLosCampos.forEach(campo => {
-                const input = document.getElementById(campo);
-                input.disabled = false;
-                input.value = '';
-                input.style.backgroundColor = '';
-            });
+        todosLosCampos.forEach(campo => {
+            const input = document.getElementById(campo);
+            input.disabled = false;
+            if (limpiar) input.value = '';  
+            input.style.backgroundColor = '';
+        });
 
-            camposBloqueados[buscar].forEach(campo => {
-                const input = document.getElementById(campo);
-                input.disabled = true;
-                input.value = '';
-                input.style.backgroundColor = '#e0e0e0';
-            });
-        }
-
-        actualizarCampos();
-    </script>
+        camposBloqueados[buscar].forEach(campo => {
+            const input = document.getElementById(campo);
+            input.disabled = true;
+            input.value = '';
+            input.style.backgroundColor = '#e0e0e0';
+        });
+    }
+    actualizarCampos(false);
+</script>
 </body>
 </html>
