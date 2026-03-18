@@ -1,55 +1,66 @@
 from django.shortcuts import render
 
-# Create your views here.
+def index(request):
+    return render(request, 'Aceleracion/index.html')
 
-def index (request):
-    return render (request, 'Aceleracion/index.html')
 
-def aceleracion (request):
-
+def aceleracion(request):
     resultado = None
     error = None
+    variable_resuelta = None
 
-    if request.method == 'POST':
-        try:
-            vf = float(request.POST.get('vf'))
-            vi = float(request.POST.get('vi'))
-            t = float(request.POST.get('t'))
+    formulas = {
+        'a':  (['vf', 'vi', 't'], lambda vf, vi, t, **_: (vf - vi) / t,  "Aceleración (m/s²)"),
+        'vf': (['vi', 'a', 't'],  lambda vi, a, t, **_:  vi + a * t,      "Velocidad final (m/s)"),
+        'vi': (['vf', 'a', 't'],  lambda vf, a, t, **_:  vf - a * t,      "Velocidad inicial (m/s)"),
+        't':  (['vf', 'vi', 'a'], lambda vf, vi, a, **_: (vf - vi) / a,   "Tiempo (s)"),
+    }
 
-            if t == 0:
-                error = "El tiempo no puede ser cero."
-            else:
-                resultado = (vf - vi) / t
+    try:
+        buscar = request.POST.get('buscar')
+        campos, formula, nombre = formulas[buscar]
+        valores = {campo: float(request.POST.get(campo, '')) for campo in campos}
+        resultado = formula(**valores)
+        variable_resuelta = nombre
 
-        except (TypeError, ValueError):
-            error = "Ingresa valores numericos validos."
+    except ZeroDivisionError:
+        error = "El divisor no puede ser cero."
+    except (TypeError, ValueError, KeyError):
+        pass
 
-             
-    return render (request, 'Aceleracion/aceleracion.html', {
+    return render(request, 'Aceleracion/aceleracion.html', {
         'resultado': resultado,
         'error': error,
+        'variable_resuelta': variable_resuelta,
     })
 
 
-
-def posicion (request):
-
+def posicion(request):
     resultado = None
     error = None
+    variable_resuelta = None
 
-    if request.method == 'POST':
-        try:
-            x0 = float(request.POST.get('x0'))
-            v = float(request.POST.get('v'))
-            t = float(request.POST.get('t'))
+    formulas = {
+        'x':  (['x0', 'v', 't'], lambda x0, v, t, **_:  x0 + v * t,   "Posición final (m)"),
+        'x0': (['x', 'v', 't'],  lambda x, v, t, **_:   x - v * t,     "Posición inicial (m)"),
+        'v':  (['x', 'x0', 't'], lambda x, x0, t, **_:  (x - x0) / t,  "Velocidad (m/s)"),
+        't':  (['x', 'x0', 'v'], lambda x, x0, v, **_:  (x - x0) / v,  "Tiempo (s)"),
+    }
 
-            resultado = x0 + v * t
+    try:
+        buscar = request.POST.get('buscar')
+        campos, formula, nombre = formulas[buscar]
+        valores = {campo: float(request.POST.get(campo, '')) for campo in campos}
+        resultado = formula(**valores)
+        variable_resuelta = nombre
 
-        except (TypeError, ValueError):
-            error = "Ingresa valores validos"
+    except ZeroDivisionError:
+        error = "El divisor no puede ser cero."
+    except (TypeError, ValueError, KeyError):
+        pass
 
-
-    return render (request, 'Aceleracion/posicion.html', {
+    return render(request, 'Aceleracion/posicion.html', {
         'resultado': resultado,
         'error': error,
+        'variable_resuelta': variable_resuelta,
     })

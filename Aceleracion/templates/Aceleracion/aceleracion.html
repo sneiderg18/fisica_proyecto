@@ -11,11 +11,23 @@
 
     <form method="POST">
         {% csrf_token %}
+
+        <label>¿Qué deseas calcular?</label><br>
+        <select name="buscar">
+            <option value="a">Aceleración (a)</option>
+            <option value="vf">Velocidad final (vf)</option>
+            <option value="vi">Velocidad inicial (vi)</option>
+            <option value="t">Tiempo (t)</option>
+        </select><br><br>
+
         <label>Velocidad inicial (vi) m/s:</label>
         <input type="number" name="vi" step="any"><br><br>
 
         <label>Velocidad final (vf) m/s:</label>
         <input type="number" name="vf" step="any"><br><br>
+
+        <label>Aceleración (a) m/s²:</label>
+        <input type="number" name="a" step="any"><br><br>
 
         <label>Tiempo (t) s:</label>
         <input type="number" name="t" step="any"><br><br>
@@ -23,8 +35,12 @@
         <button type="submit">Calcular</button>
     </form>
 
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
     {% if resultado is not None %}
-        <h2>Resultado: {{ resultado }} m/s²</h2>
+        <h2>{{ variable_resuelta }}: {{ resultado }}</h2>
     {% endif %}
 
     <br><a href="/">← Volver</a>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Posicion</title>
 </head>
 <body>
     <h1>Posición con velocidad constante</h1>
@@ -11,6 +11,18 @@
 
     <form method="POST">
         {% csrf_token %}
+
+        <label>¿Qué deseas calcular?</label><br>
+        <select name="buscar">
+            <option value="x">Posición final (x)</option>
+            <option value="x0">Posición inicial (x0)</option>
+            <option value="v">Velocidad (v)</option>
+            <option value="t">Tiempo (t)</option>
+        </select><br><br>
+
+        <label>Posición final (x) m:</label>
+        <input type="number" name="x" step="any"><br><br>
+
         <label>Posición inicial (x₀) m:</label>
         <input type="number" name="x0" step="any"><br><br>
 
@@ -23,8 +35,12 @@
         <button type="submit">Calcular</button>
     </form>
 
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
     {% if resultado is not None %}
-        <h2>Resultado: {{ resultado }} m</h2>
+        <h2>{{ variable_resuelta }}: {{ resultado }}</h2>
     {% endif %}
 
     <br><a href="/">← Volver</a>
