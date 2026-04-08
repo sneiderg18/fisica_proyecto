@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aceleracion</title>
+    <title>Aceleración</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <h1>Aceleración</h1>
@@ -41,6 +42,121 @@
 
     {% if resultado is not None %}
         <h2>{{ variable_resuelta }}: {{ resultado }}</h2>
+
+        <!-- GRÁFICAS: solo se muestran cuando hay un resultado -->
+        <hr>
+        <h3>Simulación gráfica — variación de cada variable</h3>
+
+        <!-- Gráfica 1: a vs vf -->
+        <h4>Aceleración vs Velocidad final (vf) — vi y t constantes</h4>
+        <canvas id="grafica_vf" width="500" height="300"></canvas>
+
+        <!-- Gráfica 2: a vs vi -->
+        <h4>Aceleración vs Velocidad inicial (vi) — vf y t constantes</h4>
+        <canvas id="grafica_vi" width="500" height="300"></canvas>
+
+        <!-- Gráfica 3: a vs t -->
+        <h4>Aceleración vs Tiempo (t) — vf y vi constantes</h4>
+        <canvas id="grafica_t" width="500" height="300"></canvas>
+
+        <script>
+        // Valores calculados enviados desde Django
+        const vi_base = parseFloat("{{ post.vi|default:4 }}");
+        const vf_base = parseFloat("{{ post.vf|default:10 }}");
+        const t_base  = parseFloat("{{ post.t|default:3 }}");
+
+        // Utilidad: genera un array de N puntos entre min y max
+        function linspace(min, max, n) {
+            const arr = [];
+            const paso = (max - min) / (n - 1);
+            for (let i = 0; i < n; i++) arr.push(parseFloat((min + paso * i).toFixed(4)));
+            return arr;
+        }
+
+        // ── Gráfica 1: a vs vf (vi y t fijos) ──
+        const vf_vals = linspace(vi_base, vi_base + 30, 30);
+        const a_vs_vf = vf_vals.map(vf => parseFloat(((vf - vi_base) / t_base).toFixed(4)));
+
+        new Chart(document.getElementById('grafica_vf'), {
+            type: 'line',
+            data: {
+                labels: vf_vals,
+                datasets: [{
+                    label: 'a (m/s²)',
+                    data: a_vs_vf,
+                    borderColor: 'steelblue',
+                    backgroundColor: 'rgba(70,130,180,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: { legend: { display: true } },
+                scales: {
+                    x: { title: { display: true, text: 'vf (m/s)' } },
+                    y: { title: { display: true, text: 'a (m/s²)' } }
+                }
+            }
+        });
+
+        // ── Gráfica 2: a vs vi (vf y t fijos) ──
+        const vi_vals = linspace(0, vf_base, 30);
+        const a_vs_vi = vi_vals.map(vi => parseFloat(((vf_base - vi) / t_base).toFixed(4)));
+
+        new Chart(document.getElementById('grafica_vi'), {
+            type: 'line',
+            data: {
+                labels: vi_vals,
+                datasets: [{
+                    label: 'a (m/s²)',
+                    data: a_vs_vi,
+                    borderColor: 'tomato',
+                    backgroundColor: 'rgba(255,99,71,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: { legend: { display: true } },
+                scales: {
+                    x: { title: { display: true, text: 'vi (m/s)' } },
+                    y: { title: { display: true, text: 'a (m/s²)' } }
+                }
+            }
+        });
+
+        // ── Gráfica 3: a vs t (vf y vi fijos) ──
+        const t_vals = linspace(0.5, 20, 30);
+        const a_vs_t = t_vals.map(t => parseFloat(((vf_base - vi_base) / t).toFixed(4)));
+
+        new Chart(document.getElementById('grafica_t'), {
+            type: 'line',
+            data: {
+                labels: t_vals,
+                datasets: [{
+                    label: 'a (m/s²)',
+                    data: a_vs_t,
+                    borderColor: 'seagreen',
+                    backgroundColor: 'rgba(46,139,87,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: { legend: { display: true } },
+                scales: {
+                    x: { title: { display: true, text: 't (s)' } },
+                    y: { title: { display: true, text: 'a (m/s²)' } }
+                }
+            }
+        });
+        </script>
     {% endif %}
 
     <br><a href="/">← Volver</a>
@@ -60,7 +176,7 @@
         todosLosCampos.forEach(campo => {
             const input = document.getElementById(campo);
             input.disabled = false;
-            if (limpiar) input.value = '';  
+            if (limpiar) input.value = '';
             input.style.backgroundColor = '';
         });
 
@@ -72,6 +188,6 @@
         });
     }
     actualizarCampos(false);
-</script>
+    </script>
 </body>
 </html>

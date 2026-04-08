@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Posicion</title>
+    <title>Posición</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <h1>Posición con velocidad constante</h1>
-    <p><strong>Fórmula:</strong> x = x₀ + v·t</p>
+    <p><strong>Fórmula:</strong> x = x₀ + v · t</p>
 
     <form method="POST">
         {% csrf_token %}
@@ -41,6 +42,121 @@
 
     {% if resultado is not None %}
         <h2>{{ variable_resuelta }}: {{ resultado }}</h2>
+
+        <!-- GRÁFICAS: solo se muestran cuando hay un resultado -->
+        <hr>
+        <h3>Simulación gráfica — variación de cada variable</h3>
+
+        <!-- Gráfica 1: x vs v -->
+        <h4>Posición final vs Velocidad (v) — x₀ y t constantes</h4>
+        <canvas id="grafica_v" width="500" height="300"></canvas>
+
+        <!-- Gráfica 2: x vs t -->
+        <h4>Posición final vs Tiempo (t) — x₀ y v constantes</h4>
+        <canvas id="grafica_t" width="500" height="300"></canvas>
+
+        <!-- Gráfica 3: x vs x0 -->
+        <h4>Posición final vs Posición inicial (x₀) — v y t constantes</h4>
+        <canvas id="grafica_x0" width="500" height="300"></canvas>
+
+        <script>
+        // Valores calculados enviados desde Django
+        const x0_base = parseFloat("{{ post.x0|default:50 }}");
+        const v_base  = parseFloat("{{ post.v|default:20 }}");
+        const t_base  = parseFloat("{{ post.t|default:5 }}");
+
+        // Utilidad: genera un array de N puntos entre min y max
+        function linspace(min, max, n) {
+            const arr = [];
+            const paso = (max - min) / (n - 1);
+            for (let i = 0; i < n; i++) arr.push(parseFloat((min + paso * i).toFixed(4)));
+            return arr;
+        }
+
+        // ── Gráfica 1: x vs v (x0 y t fijos) ──
+        const v_vals = linspace(0, v_base * 2 + 1, 30);
+        const x_vs_v = v_vals.map(v => parseFloat((x0_base + v * t_base).toFixed(4)));
+
+        new Chart(document.getElementById('grafica_v'), {
+            type: 'line',
+            data: {
+                labels: v_vals,
+                datasets: [{
+                    label: 'x (m)',
+                    data: x_vs_v,
+                    borderColor: 'steelblue',
+                    backgroundColor: 'rgba(70,130,180,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: { legend: { display: true } },
+                scales: {
+                    x: { title: { display: true, text: 'v (m/s)' } },
+                    y: { title: { display: true, text: 'x (m)' } }
+                }
+            }
+        });
+
+        // ── Gráfica 2: x vs t (x0 y v fijos) ──
+        const t_vals = linspace(0, t_base * 2 + 1, 30);
+        const x_vs_t = t_vals.map(t => parseFloat((x0_base + v_base * t).toFixed(4)));
+
+        new Chart(document.getElementById('grafica_t'), {
+            type: 'line',
+            data: {
+                labels: t_vals,
+                datasets: [{
+                    label: 'x (m)',
+                    data: x_vs_t,
+                    borderColor: 'tomato',
+                    backgroundColor: 'rgba(255,99,71,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: { legend: { display: true } },
+                scales: {
+                    x: { title: { display: true, text: 't (s)' } },
+                    y: { title: { display: true, text: 'x (m)' } }
+                }
+            }
+        });
+
+        // ── Gráfica 3: x vs x0 (v y t fijos) ──
+        const x0_vals = linspace(0, x0_base * 2 + 1, 30);
+        const x_vs_x0 = x0_vals.map(x0 => parseFloat((x0 + v_base * t_base).toFixed(4)));
+
+        new Chart(document.getElementById('grafica_x0'), {
+            type: 'line',
+            data: {
+                labels: x0_vals,
+                datasets: [{
+                    label: 'x (m)',
+                    data: x_vs_x0,
+                    borderColor: 'seagreen',
+                    backgroundColor: 'rgba(46,139,87,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 3
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: { legend: { display: true } },
+                scales: {
+                    x: { title: { display: true, text: 'x₀ (m)' } },
+                    y: { title: { display: true, text: 'x (m)' } }
+                }
+            }
+        });
+        </script>
     {% endif %}
 
     <br><a href="/">← Volver</a>
@@ -60,7 +176,7 @@
         todosLosCampos.forEach(campo => {
             const input = document.getElementById(campo);
             input.disabled = false;
-            if (limpiar) input.value = '';  
+            if (limpiar) input.value = '';
             input.style.backgroundColor = '';
         });
 
@@ -72,6 +188,6 @@
         });
     }
     actualizarCampos(false);
-</script>
+    </script>
 </body>
 </html>
